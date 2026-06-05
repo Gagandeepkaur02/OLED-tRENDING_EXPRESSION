@@ -1,0 +1,101 @@
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+void drawFace(int pupilOffset, int eyeHeight)
+{
+  display.clearDisplay();
+
+  // ===== HAPPY EYEBROWS =====
+  for(int i=0; i<3; i++)
+  {
+    display.drawLine(18,18-i,48,14-i,WHITE);
+    display.drawLine(80,14-i,110,18-i,WHITE);
+  }
+
+  // ===== EYES =====
+  display.fillRoundRect(15,20,40,eyeHeight,12,WHITE);
+  display.fillRoundRect(73,20,40,eyeHeight,12,WHITE);
+
+  // ===== EYELASHES =====
+  display.drawLine(12,18,20,10,WHITE);
+  display.drawLine(22,18,28,9,WHITE);
+  display.drawLine(32,18,36,8,WHITE);
+
+  display.drawLine(116,18,108,10,WHITE);
+  display.drawLine(106,18,100,9,WHITE);
+  display.drawLine(96,18,92,8,WHITE);
+
+  // ===== PUPILS =====
+  if(eyeHeight > 12)
+  {
+    display.fillCircle(35 + pupilOffset,34,8,BLACK);
+    display.fillCircle(93 + pupilOffset,34,8,BLACK);
+
+    // Eye shine
+    display.fillCircle(32 + pupilOffset,30,2,WHITE);
+    display.fillCircle(90 + pupilOffset,30,2,WHITE);
+
+    display.fillCircle(38 + pupilOffset,38,1,WHITE);
+    display.fillCircle(96 + pupilOffset,38,1,WHITE);
+  }
+
+  // ===== CUTE SMILE =====
+  display.drawLine(58,55,70,55,WHITE);
+  display.drawPixel(57,54,WHITE);
+  display.drawPixel(71,54,WHITE);
+
+  display.display();
+}
+
+void blink()
+{
+  for(int h=28; h>=2; h-=2)
+  {
+    drawFace(0,h);
+    delay(20);
+  }
+
+  delay(80);
+
+  for(int h=2; h<=28; h+=2)
+  {
+    drawFace(0,h);
+    delay(20);
+  }
+}
+
+void setup()
+{
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+}
+
+void loop()
+{
+  // Look Left
+  drawFace(-3,28);
+  delay(1000);
+
+  // Center
+  drawFace(0,28);
+  delay(1000);
+
+  // Blink
+  blink();
+
+  // Look Right
+  drawFace(3,28);
+  delay(1000);
+
+  // Blink
+  blink();
+
+  // Center
+  drawFace(0,28);
+  delay(1500);
+}
